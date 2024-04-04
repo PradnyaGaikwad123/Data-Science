@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Word Popularity</h1>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- Form for taking N and To and From Dates from user -->
+                <form id="frequencyAnalysisForm">
+                    <label for="topNInput">Enter N:</label>
+                    <input type="number" id="topNInput" name="topN" min="1" value="10" required>
+                
+                    <label for="fromDate">From Date:</label>
+                    <input type="date" id="fromDate" name="fromDate" min="2023-11-01" value="2023-11-01" required>
+                
+                    <label for="toDate">To Date:</label>
+                    <input type="date" id="toDate" name="toDate" value="{{ today }}" max="{{ today }}" required>
+                
+                    <button type="button" onclick="fetchData()">Submit</button>
+                </form>
+                
+                <script>
+                    // Set default value for 'To Date' input to current date
+                    document.getElementById('toDate').valueAsDate = new Date();
+                </script>
+                
+
+                <!-- Plot for Top N Tumblr Keywords -->
+                <h2 class="mt-4" id="topTumblrKeywordsHeading"></h2>
+                <div id="topTumblrKeywordsPlot"></div>
+
+                <!-- Container for Word Cloud image -->
+                <div class="mt-4" id="wordCloudTumblrContainer"></div>
+
+                <!-- Plot for Top N Reddit Keywords -->
+                <h2 class="mt-4" id="topRedditKeywordsHeading"></h2>
+                <div id="topRedditKeywordsPlot"></div>
+
+                <!-- Container for Word Cloud image -->
+                <div class="mt-4" id="wordCloudRedditContainer"></div>
+
+                <div class="d-flex justify-content-center" id="loadingSpinner" style="display: none;">
+                    <div id="inner-spin" class="spinner-border" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include Bootstrap CSS and Bootstrap Icons CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Include Plotly library -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function fetchData() {
+            document.getElementById('loadingSpinner').style.display = 'none';
+
+            // Fetch user input values
+            var topN = document.getElementById('topNInput').value;
+            var fromDate = document.getElementById('fromDate').value;
+            var toDate = document.getElementById('toDate').value;
+
+            // Show the loading spinner before fetching data
+            document.getElementById('loadingSpinner').style.display = 'block';
+
+            // Fetch data from Flask route for Top N Tumblr Keywords
+            fetch(`/top_tumblr_keywords?n=${topN}&from_date=${fromDate}&to_date=${toDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    var topKeywordsData = {
+                        x: data.keywords,
+                        y: data.keyword_counts,
+                        type: 'bar',
+                        marker: {
+                            color: 'green'
+                        }
+                    };
+
+                    var topKeywordsLayout = {
+                        title: `Top ${topN} Tumblr Keywords (${fromDate} to ${toDate})`,
+                        xaxis: { title: 'Keyword' },
+                        yaxis: { title: 'Occurrences' }
+                    };
+
+                    Plotly.newPlot('topTumblrKeywordsPlot', [topKeywordsData], topKeywordsLayout);
+                    document.getElementById('topTumblrKeywordsHeading').innerHTML = `<i class="fab fa-tumblr" style="font-size: 1em; margin-right: 10px; color: navy;"></i> Top ${topN} Tumblr Keywords`;
+                });
+
+            // Fetch data from Flask route for Word Cloud Tumblr
+            fetch(`/wordcloud_tumblr?from_date=${fromDate}&to_date=${toDate}`)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('wordCloudTumblrContainer').innerHTML = data;
+                });
+
+            // Fetch data from Flask route for Top N Reddit Keywords
+            fetch(`/top_reddit_keywords?n=${topN}&from_date=${fromDate}&to_date=${toDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    var topKeywordsData = {
+                        x: data.keywords,
+                        y: data.keyword_counts,
+                        type: 'bar',
+                        marker: {
+                            color: 'orange'
+                        }
+                    };
+
+                    var topKeywordsLayout = {
+                        title: `Top ${topN} Reddit Keywords (${fromDate} to ${toDate})`,
+                        xaxis: { title: 'Keyword' },
+                        yaxis: { title: 'Occurrences' }
+                    };
+
+                    Plotly.newPlot('topRedditKeywordsPlot', [topKeywordsData], topKeywordsLayout);
+                    document.getElementById('topRedditKeywordsHeading').innerHTML = `<i class="bi bi-reddit text-danger" style="font-size: 1em; margin-right: 10px;"></i> Top ${topN} Reddit Keywords`;
+                });
+            
+            // Fetch data from Flask route for Word Cloud Reddit
+            fetch(`/wordcloud_reddit?from_date=${fromDate}&to_date=${toDate}`)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('wordCloudRedditContainer').innerHTML = data;
+                    document.getElementById('loadingSpinner').style.display = 'none';
+                });
+        }
+    </script>
+{% endblock %}

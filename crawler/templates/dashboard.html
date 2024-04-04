@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card shadow mb-4">
+                    <div class="card-body">
+                        <h2 class="card-title">IDENTIFYING TRENDS IN PROGRAMMING LANGUAGES, FRAMEWORKS AND TECHNOLOGIES</h2>
+                        <p class="card-text">
+                            Social media is the fastest way to analyze what’s trending. Reddit
+                            and Tumblr are widely used discussion platforms. Reddit has close
+                            to 830,000 posts per day and Tumblr has approximately 12.8 million
+                            blog posts per day. To understand the trends in programming
+                            languages, frameworks, and technologies, hot topics in relevant domains,
+                            we are collecting data and analyzing it. We will be collecting
+                            posts published in the selected 53 subreddits and from Reddit and
+                            posts tagged with the selected 53 hashtags from Tumblr. We will
+                            also be collecting comments and replies published by users. Based
+                            on this real-time data collected via the Reddit and Tumblr Web APIs,
+                            we will be able to provide analysis that will help us understand
+                            what is trending in the technology and programming world and
+                            what one should focus on and adopt in order to stay relevant in the
+                            industry and sustain in today’s competitive market.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card text-center shadow" style="width: 100%;">
+                    <i class="fab fa-reddit card-img-top text-danger" style="font-size: 3rem;"></i>
+                    <div class="card-body">
+                        <h5 class="card-title">Total Posts</h5>
+                        <p class="card-text" style="font-size: 1.5rem; font-weight: bold;">{{ count_data[0] if count_data else 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card text-center shadow" style="width: 100%;">
+                    <i class="fab fa-reddit card-img-top text-danger" style="font-size: 3rem;"></i>
+                    <div class="card-body">
+                        <h5 class="card-title">Total Comments</h5>
+                        <p class="card-text" style="font-size: 1.5rem; font-weight: bold;">{{ count_data[1] if count_data else 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card text-center shadow" style="width: 100%;">
+                    <i class="fab fa-tumblr card-img-top" style="font-size: 3rem; color: navy;"></i>
+                    <div class="card-body">
+                        <h5 class="card-title">Total Count:</h5>
+                        <p class="card-text" style="font-size: 1.5rem; font-weight: bold;">{{ count_data[2] if count_data else 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-4">
+                <div class="card text-center shadow" style="width: 100%;">
+                    <i class="fab fa-tumblr card-img-top" style="font-size: 3rem; color: navy;"></i>
+                    <div class="card-body">
+                        <h5 class="card-title">Total Comments</h5>
+                        <p class="card-text" style="font-size: 1.5rem; font-weight: bold;">{{ count_data[3] if count_data else 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
